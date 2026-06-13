@@ -42,7 +42,9 @@ export function createGame(players) {
     accuserIds: [],
     accusation: null,
     accusations: [],
+    finalAccusation: null,
     result: null,
+    roundEndsAt: null,
     startedAt: new Date().toISOString()
   };
 }

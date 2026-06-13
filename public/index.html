@@ -22,6 +22,9 @@
     <h2>Your role</h2>
     <p id="role"></p>
 
+    <h2>Timer</h2>
+    <p id="timer"></p>
+
     <h2>Turn</h2>
     <p id="turn"></p>
 
@@ -34,22 +37,21 @@
     <p id="belief-questioner-line">Does the questioner seem more or less like a spy?</p>
     <select id="questioner-belief">
       <option value="">blank</option>
-      <option value="--">--</option>
       <option value="-">-</option>
       <option value="N">N</option>
       <option value="+">+</option>
-      <option value="++">++</option>
     </select>
 
     <p id="belief-answerer-line">Does the answerer seem more or less like a spy?</p>
     <select id="answerer-belief">
       <option value="">blank</option>
-      <option value="--">--</option>
       <option value="-">-</option>
       <option value="N">N</option>
       <option value="+">+</option>
-      <option value="++">++</option>
     </select>
+
+    <p>Spy suspected locations</p>
+    <div id="suspected-locations"></div>
 
     <button id="submit-belief-update">Submit belief update</button>
 
@@ -61,6 +63,9 @@
     <p id="accusation"></p>
     <button id="vote-yes">Vote yes</button>
     <button id="vote-no">Vote no</button>
+
+    <h2>Final accusation</h2>
+    <p id="final-accusation"></p>
 
     <h3>Start accusation</h3>
     <select id="accused"></select>

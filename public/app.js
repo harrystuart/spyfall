@@ -9,6 +9,7 @@ const startGameButton = document.querySelector("#start-game");
 const leaveRoomButton = document.querySelector("#leave-room");
 const status = document.querySelector("#status");
 const role = document.querySelector("#role");
+const timer = document.querySelector("#timer");
 const turn = document.querySelector("#turn");
 const result = document.querySelector("#result");
 const beliefUpdate = document.querySelector("#belief-update");
@@ -16,10 +17,12 @@ const beliefQuestionerLine = document.querySelector("#belief-questioner-line");
 const beliefAnswererLine = document.querySelector("#belief-answerer-line");
 const questionerBeliefSelect = document.querySelector("#questioner-belief");
 const answererBeliefSelect = document.querySelector("#answerer-belief");
+const suspectedLocations = document.querySelector("#suspected-locations");
 const submitBeliefUpdateButton = document.querySelector("#submit-belief-update");
 const spyGuessLocationSelect = document.querySelector("#spy-guess-location");
 const spyGuessButton = document.querySelector("#spy-guess");
 const accusation = document.querySelector("#accusation");
+const finalAccusation = document.querySelector("#final-accusation");
 const accusedSelect = document.querySelector("#accused");
 const startAccusationButton = document.querySelector("#start-accusation");
 const voteYesButton = document.querySelector("#vote-yes");
@@ -60,7 +63,8 @@ leaveRoomButton.addEventListener("click", () => {
 submitBeliefUpdateButton.addEventListener("click", () => {
   socket.emit("submit_belief_update", {
     questionerBelief: questionerBeliefSelect.value,
-    answererBelief: answererBeliefSelect.value
+    answererBelief: answererBeliefSelect.value,
+    suspectedLocations: getSelectedSuspectedLocations()
   });
 });
 
@@ -107,23 +111,32 @@ function sendMessage() {
   chatMessageInput.value = "";
 }
 
+function getSelectedSuspectedLocations() {
+  return Array.from(document.querySelectorAll("input[name='suspected-location']:checked"))
+    .map(input => input.value);
+}
+
 socket.on("room_created", ({ code }) => {
   roomCodeInput.value = code;
   role.textContent = "";
+  timer.textContent = "";
   turn.textContent = "";
   result.textContent = "";
   beliefUpdate.textContent = "";
   accusation.textContent = "";
+  finalAccusation.textContent = "";
   status.textContent = `Created room ${code}`;
 });
 
 socket.on("room_joined", ({ code }) => {
   roomCodeInput.value = code;
   role.textContent = "";
+  timer.textContent = "";
   turn.textContent = "";
   result.textContent = "";
   beliefUpdate.textContent = "";
   accusation.textContent = "";
+  finalAccusation.textContent = "";
   status.textContent = `Joined room ${code}`;
 });
 
@@ -134,11 +147,14 @@ socket.on("room_left", () => {
   answererSelect.innerHTML = "";
   accusedSelect.innerHTML = "";
   spyGuessLocationSelect.innerHTML = "";
+  suspectedLocations.innerHTML = "";
   role.textContent = "";
+  timer.textContent = "";
   turn.textContent = "";
   result.textContent = "";
   beliefUpdate.textContent = "";
   accusation.textContent = "";
+  finalAccusation.textContent = "";
   status.textContent = "Left room";
 });
 
@@ -149,11 +165,14 @@ socket.on("room_destroyed", ({ message }) => {
   answererSelect.innerHTML = "";
   accusedSelect.innerHTML = "";
   spyGuessLocationSelect.innerHTML = "";
+  suspectedLocations.innerHTML = "";
   role.textContent = "";
+  timer.textContent = "";
   turn.textContent = "";
   result.textContent = "";
   beliefUpdate.textContent = "";
   accusation.textContent = "";
+  finalAccusation.textContent = "";
   status.textContent = "Room destroyed";
   alert(message);
 });
@@ -163,12 +182,20 @@ socket.on("room_updated", ({
   turn: currentTurn,
   beliefUpdate: currentBeliefUpdate,
   accusation: currentAccusation,
+  finalAccusation: currentFinalAccusation,
   result: gameResult,
+  roundEndsAt,
   locations,
   players,
   messages
 }) => {
   status.textContent = `Room status: ${roomStatus}`;
+
+  if (!roundEndsAt || currentFinalAccusation || roomStatus === "finished") {
+    timer.textContent = "";
+  } else {
+    timer.textContent = `Round ends at ${new Date(roundEndsAt).toLocaleTimeString()}`;
+  }
 
   if (!currentTurn) {
     turn.textContent = roomStatus === "finished" ? "Game finished." : "Free chat before the game starts.";
@@ -176,8 +203,14 @@ socket.on("room_updated", ({
     turn.textContent = `${currentTurn.currentQuestionerName} asks next.`;
   } else if (currentTurn.phase === "answering") {
     turn.textContent = `${currentTurn.currentAnswererName} is answering ${currentTurn.currentQuestionerName}.`;
-  } else {
+  } else if (currentTurn.phase === "belief") {
     turn.textContent = "Belief updates are pending.";
+  } else if (currentTurn.phase === "final_accusing") {
+    turn.textContent = "Final accusation phase: waiting for the next accusation.";
+  } else if (currentTurn.phase === "final_voting") {
+    turn.textContent = "Final accusation phase: voting.";
+  } else {
+    turn.textContent = "Unknown turn state.";
   }
 
   if (!currentBeliefUpdate) {
@@ -204,6 +237,9 @@ socket.on("room_updated", ({
   } else if (gameResult.reason === "spy_wrong_location_guess") {
     result.textContent =
       `Players win. ${gameResult.spyName} guessed ${gameResult.guessedLocation}, but the location was ${gameResult.location}.`;
+  } else if (gameResult.reason === "final_accusations_failed") {
+    result.textContent =
+      `Spy wins. No final accusation succeeded. The spy was ${gameResult.spyName}. Location was ${gameResult.location}.`;
   } else if (gameResult.winner === "players") {
     result.textContent =
       `Players win. ${gameResult.accusedName} was the spy. Location was ${gameResult.location}.`;
@@ -229,6 +265,32 @@ socket.on("room_updated", ({
 
     accusation.textContent =
       `${currentAccusation.accuserName} accused ${currentAccusation.accusedName}. ` +
+      `Votes so far: ${voteText}. ` +
+      (pendingText ? `Waiting for: ${pendingText}.` : "All eligible votes are in.");
+  }
+
+  if (!currentFinalAccusation) {
+    finalAccusation.textContent = "No final accusation phase.";
+  } else if (!currentFinalAccusation.accusedName) {
+    finalAccusation.textContent =
+      `Final accusation ${currentFinalAccusation.currentAccuserNumber} of ${currentFinalAccusation.totalAccusers}. ` +
+      `${currentFinalAccusation.currentAccuserName} must accuse.`;
+  } else {
+    const voteText = currentFinalAccusation.votes
+      .map(vote => {
+        if (vote.automatic) {
+          return `${vote.voterName}: ${vote.vote} (accusation)`;
+        }
+
+        return `${vote.voterName}: ${vote.vote}`;
+      })
+      .join(", ");
+
+    const pendingText = currentFinalAccusation.pendingVoterNames.join(", ");
+
+    finalAccusation.textContent =
+      `Final accusation ${currentFinalAccusation.currentAccuserNumber} of ${currentFinalAccusation.totalAccusers}. ` +
+      `${currentFinalAccusation.currentAccuserName} accused ${currentFinalAccusation.accusedName}. ` +
       `Votes so far: ${voteText}. ` +
       (pendingText ? `Waiting for: ${pendingText}.` : "All eligible votes are in.");
   }
@@ -263,6 +325,33 @@ socket.on("room_updated", ({
     option.value = location;
     option.textContent = location;
     spyGuessLocationSelect.appendChild(option);
+  }
+
+  suspectedLocations.innerHTML = "";
+
+  const noneLabel = document.createElement("label");
+  const noneCheckbox = document.createElement("input");
+  noneCheckbox.type = "checkbox";
+  noneCheckbox.name = "suspected-location";
+  noneCheckbox.value = "none";
+  noneLabel.appendChild(noneCheckbox);
+  noneLabel.append(" none");
+  suspectedLocations.appendChild(noneLabel);
+  suspectedLocations.appendChild(document.createElement("br"));
+
+  for (const location of locations) {
+    const label = document.createElement("label");
+    const checkbox = document.createElement("input");
+
+    checkbox.type = "checkbox";
+    checkbox.name = "suspected-location";
+    checkbox.value = location;
+
+    label.appendChild(checkbox);
+    label.append(` ${location}`);
+
+    suspectedLocations.appendChild(label);
+    suspectedLocations.appendChild(document.createElement("br"));
   }
 
   messagesList.innerHTML = "";

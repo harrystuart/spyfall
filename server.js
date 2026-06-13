@@ -10,7 +10,8 @@ const io = new Server(server);
 const MIN_PLAYERS = 2;
 const MAX_PLAYERS = 4;
 const MAX_CHAT_MESSAGE_LENGTH = 500;
-const BELIEF_VALUES = ["--", "-", "N", "+", "++"];
+const ROUND_SECONDS = 30;
+const BELIEF_VALUES = ["-", "N", "+"];
 
 const rooms = new Map();
 
@@ -40,7 +41,8 @@ io.on("connection", socket => {
       status: "lobby",
       players: [player],
       messages: [],
-      game: null
+      game: null,
+      roundTimer: null
     });
 
     socket.data.roomCode = code;
@@ -144,13 +146,14 @@ io.on("connection", socket => {
 
     room.status = "playing";
     room.game = createGame(room.players);
+    startRoundTimer(roomCode, room);
 
     room.messages.push({
       type: "system",
       senderId: null,
       senderName: "System",
       recipientName: null,
-      text: "Game started.",
+      text: `Game started. Timer: ${ROUND_SECONDS} seconds.`,
       sentAt: new Date().toISOString()
     });
 
@@ -160,7 +163,7 @@ io.on("connection", socket => {
     console.log(rooms);
   });
 
-  socket.on("submit_belief_update", ({ questionerBelief, answererBelief }) => {
+  socket.on("submit_belief_update", ({ questionerBelief, answererBelief, suspectedLocations }) => {
     if (!socket.data.roomCode) {
       socket.emit("app_error", "You are not in a room");
       return;
@@ -187,6 +190,11 @@ io.on("connection", socket => {
       throw new Error(`Room ${roomCode} is playing without a game`);
     }
 
+    if (room.game.finalAccusation) {
+      socket.emit("app_error", "Timer expired. Belief updates are closed.");
+      return;
+    }
+
     if (room.game.accusation) {
       socket.emit("app_error", "Voting is in progress");
       return;
@@ -207,11 +215,6 @@ io.on("connection", socket => {
       throw new Error(`Socket ${socket.id} is missing from room ${roomCode}`);
     }
 
-    if (socket.id === room.game.spyId) {
-      socket.emit("app_error", "Spy cannot submit belief updates");
-      return;
-    }
-
     if (!room.game.beliefUpdate.voterIds.includes(socket.id)) {
       throw new Error(`Socket ${socket.id} is not eligible for belief update in room ${roomCode}`);
     }
@@ -227,9 +230,11 @@ io.on("connection", socket => {
 
     const beliefValidation = validateBeliefUpdateForPlayer(
       room.game.beliefUpdate,
+      room.game.spyId,
       socket.id,
       questionerBelief,
-      answererBelief
+      answererBelief,
+      suspectedLocations
     );
 
     if (beliefValidation.error) {
@@ -242,6 +247,7 @@ io.on("connection", socket => {
       voterName: player.name,
       questionerBelief: beliefValidation.questionerBelief,
       answererBelief: beliefValidation.answererBelief,
+      suspectedLocations: beliefValidation.suspectedLocations,
       submittedAt: new Date().toISOString()
     });
 
@@ -326,6 +332,11 @@ io.on("connection", socket => {
       throw new Error(`Room ${roomCode} is playing without a game`);
     }
 
+    if (room.game.finalAccusation) {
+      socket.emit("app_error", "Timer expired. Spy can no longer guess.");
+      return;
+    }
+
     if (socket.id !== room.game.spyId) {
       socket.emit("app_error", "Only the spy can guess the location");
       return;
@@ -363,6 +374,11 @@ io.on("connection", socket => {
 
     if (!room.game) {
       throw new Error(`Room ${roomCode} is playing without a game`);
+    }
+
+    if (room.game.finalAccusation) {
+      startFinalAccusation(roomCode, room, socket, accusedName);
+      return;
     }
 
     if (room.game.accusation) {
@@ -410,6 +426,7 @@ io.on("connection", socket => {
     room.game.accuserIds.push(socket.id);
 
     const accusation = {
+      kind: "normal",
       accuserId: accuser.id,
       accusedId: accused.id,
       votingPlayerIds,
@@ -481,6 +498,11 @@ io.on("connection", socket => {
 
     if (!room.game) {
       throw new Error(`Room ${roomCode} is playing without a game`);
+    }
+
+    if (room.game.finalAccusation) {
+      voteFinalAccusation(roomCode, room, socket, vote);
+      return;
     }
 
     if (!room.game.accusation) {
@@ -641,6 +663,22 @@ io.on("connection", socket => {
       throw new Error(`Room ${roomCode} is playing without a game`);
     }
 
+    if (room.game.finalAccusation) {
+      room.messages.push({
+        type: "chat",
+        senderId: socket.id,
+        senderName: player.name,
+        recipientName: null,
+        text: text.trim(),
+        sentAt: new Date().toISOString()
+      });
+
+      io.to(roomCode).emit("room_updated", publicRoom(room));
+
+      console.log(rooms);
+      return;
+    }
+
     if (room.game.accusation) {
       socket.emit("app_error", "Voting is in progress. No discussion.");
       return;
@@ -727,9 +765,7 @@ io.on("connection", socket => {
       room.game.beliefUpdate = {
         questionerId,
         answererId,
-        voterIds: room.players
-          .filter(player => player.id !== room.game.spyId)
-          .map(player => player.id),
+        voterIds: room.players.map(player => player.id),
         updates: [],
         startedAt: new Date().toISOString()
       };
@@ -800,6 +836,400 @@ io.on("connection", socket => {
     console.log(rooms);
   });
 });
+
+function startRoundTimer(roomCode, room) {
+  if (!room.game) {
+    throw new Error("Cannot start timer before game exists");
+  }
+
+  clearRoundTimer(room);
+
+  room.game.roundEndsAt = new Date(Date.now() + ROUND_SECONDS * 1000).toISOString();
+
+  room.roundTimer = setTimeout(() => {
+    expireRoundTimer(roomCode);
+  }, ROUND_SECONDS * 1000);
+}
+
+function clearRoundTimer(room) {
+  if (room.roundTimer) {
+    clearTimeout(room.roundTimer);
+    room.roundTimer = null;
+  }
+}
+
+function expireRoundTimer(roomCode) {
+  const room = rooms.get(roomCode);
+
+  if (!room) {
+    return;
+  }
+
+  room.roundTimer = null;
+
+  if (room.status !== "playing") {
+    return;
+  }
+
+  if (!room.game) {
+    throw new Error(`Room ${roomCode} is playing without a game`);
+  }
+
+  if (room.game.result) {
+    return;
+  }
+
+  if (room.game.finalAccusation) {
+    return;
+  }
+
+  startFinalAccusationPhase(room);
+
+  io.to(roomCode).emit("room_updated", publicRoom(room));
+
+  console.log(rooms);
+}
+
+function startFinalAccusationPhase(room) {
+  if (!room.game) {
+    throw new Error("Cannot start final accusation phase without game");
+  }
+
+  const hostIndex = room.players.findIndex(player => player.id === room.hostId);
+
+  if (hostIndex === -1) {
+    throw new Error(`Host ${room.hostId} is missing from players`);
+  }
+
+  if (room.game.accusation) {
+    room.game.accusation.result = "interrupted_by_timer";
+    room.game.accusation.endedAt = new Date().toISOString();
+    room.game.accusations.push(room.game.accusation);
+    room.game.accusation = null;
+  }
+
+  if (room.game.beliefUpdate) {
+    room.game.beliefUpdate.result = "interrupted_by_timer";
+    room.game.beliefUpdate.endedAt = new Date().toISOString();
+    room.game.beliefUpdates.push(room.game.beliefUpdate);
+    room.game.beliefUpdate = null;
+  }
+
+  const accuserOrder = room.players
+    .slice(hostIndex)
+    .concat(room.players.slice(0, hostIndex));
+
+  room.game.finalAccusation = {
+    accuserOrderIds: accuserOrder.map(player => player.id),
+    currentAccuserIndex: 0,
+    accusation: null,
+    accusations: [],
+    startedAt: new Date().toISOString()
+  };
+
+  room.game.currentAnswererId = null;
+  room.game.phase = "final_accusing";
+
+  room.messages.push({
+    type: "system",
+    senderId: null,
+    senderName: "System",
+    recipientName: null,
+    text: `Timer expired. Final accusations begin with ${accuserOrder[0].name}.`,
+    sentAt: new Date().toISOString()
+  });
+}
+
+function startFinalAccusation(roomCode, room, socket, accusedName) {
+  if (!room.game) {
+    throw new Error("Cannot start final accusation without game");
+  }
+
+  if (!room.game.finalAccusation) {
+    throw new Error("Cannot start final accusation without final accusation state");
+  }
+
+  if (room.game.phase !== "final_accusing") {
+    socket.emit("app_error", "Final accusation vote is already active");
+    return;
+  }
+
+  if (room.game.finalAccusation.accusation) {
+    throw new Error("Final accusation phase is asking while accusation exists");
+  }
+
+  const currentAccuserId = room.game.finalAccusation.accuserOrderIds[
+    room.game.finalAccusation.currentAccuserIndex
+  ];
+
+  if (socket.id !== currentAccuserId) {
+    socket.emit("app_error", "It is not your turn to accuse");
+    return;
+  }
+
+  const accusedError = validateAccusedInput(accusedName);
+
+  if (accusedError) {
+    socket.emit("app_error", accusedError);
+    return;
+  }
+
+  const accuser = room.players.find(player => player.id === socket.id);
+
+  if (!accuser) {
+    throw new Error(`Socket ${socket.id} is missing from room ${roomCode}`);
+  }
+
+  const accused = room.players.find(player => {
+    return player.name.toLowerCase() === accusedName.trim().toLowerCase();
+  });
+
+  if (!accused) {
+    socket.emit("app_error", "Accused player is not in this room");
+    return;
+  }
+
+  if (accused.id === socket.id) {
+    socket.emit("app_error", "You cannot accuse yourself");
+    return;
+  }
+
+  const votingPlayerIds = room.players
+    .filter(player => player.id !== accused.id)
+    .filter(player => player.id !== accuser.id)
+    .map(player => player.id);
+
+  const accusation = {
+    kind: "final",
+    accuserId: accuser.id,
+    accusedId: accused.id,
+    votingPlayerIds,
+    votes: [
+      {
+        voterId: accuser.id,
+        voterName: accuser.name,
+        vote: "yes",
+        automatic: true,
+        votedAt: new Date().toISOString()
+      }
+    ],
+    startedAt: new Date().toISOString()
+  };
+
+  room.game.finalAccusation.accusation = accusation;
+  room.game.phase = "final_voting";
+
+  room.messages.push({
+    type: "system",
+    senderId: null,
+    senderName: "System",
+    recipientName: null,
+    text: `${accuser.name} made a final accusation against ${accused.name}.`,
+    sentAt: new Date().toISOString()
+  });
+
+  if (votingPlayerIds.length === 0) {
+    resolveConviction(room, accusation);
+  }
+
+  io.to(roomCode).emit("room_updated", publicRoom(room));
+
+  console.log(rooms);
+}
+
+function voteFinalAccusation(roomCode, room, socket, vote) {
+  if (!room.game) {
+    throw new Error("Cannot vote final accusation without game");
+  }
+
+  if (!room.game.finalAccusation) {
+    throw new Error("Cannot vote final accusation without final accusation state");
+  }
+
+  if (room.game.phase !== "final_voting") {
+    socket.emit("app_error", "There is no active accusation");
+    return;
+  }
+
+  const accusation = room.game.finalAccusation.accusation;
+
+  if (!accusation) {
+    throw new Error("Final voting phase has no accusation");
+  }
+
+  const voter = room.players.find(player => player.id === socket.id);
+
+  if (!voter) {
+    throw new Error(`Socket ${socket.id} is missing from room ${roomCode}`);
+  }
+
+  const accused = room.players.find(player => {
+    return player.id === accusation.accusedId;
+  });
+
+  if (!accused) {
+    throw new Error(`Accused ${accusation.accusedId} is missing from room ${roomCode}`);
+  }
+
+  if (socket.id === accusation.accusedId) {
+    socket.emit("app_error", "Accused cannot vote");
+    return;
+  }
+
+  if (socket.id === accusation.accuserId) {
+    socket.emit("app_error", "The accusation is your vote");
+    return;
+  }
+
+  if (!accusation.votingPlayerIds.includes(socket.id)) {
+    socket.emit("app_error", "You are not eligible to vote on this accusation");
+    return;
+  }
+
+  const existingVote = accusation.votes.find(vote => {
+    return vote.voterId === socket.id;
+  });
+
+  if (existingVote) {
+    socket.emit("app_error", "You have already voted");
+    return;
+  }
+
+  accusation.votes.push({
+    voterId: socket.id,
+    voterName: voter.name,
+    vote,
+    automatic: false,
+    votedAt: new Date().toISOString()
+  });
+
+  if (vote === "no") {
+    accusation.result = "failed";
+    accusation.endedAt = new Date().toISOString();
+    room.game.finalAccusation.accusations.push(accusation);
+    room.game.accusations.push(accusation);
+    room.game.finalAccusation.accusation = null;
+
+    room.messages.push({
+      type: "system",
+      senderId: null,
+      senderName: "System",
+      recipientName: null,
+      text: `${voter.name} voted no. The final accusation against ${accused.name} failed.`,
+      sentAt: new Date().toISOString()
+    });
+
+    advanceFinalAccuser(room);
+
+    io.to(roomCode).emit("room_updated", publicRoom(room));
+
+    console.log(rooms);
+    return;
+  }
+
+  const remainingVoterIds = accusation.votingPlayerIds.filter(voterId => {
+    return !accusation.votes.find(vote => vote.voterId === voterId);
+  });
+
+  room.messages.push({
+    type: "system",
+    senderId: null,
+    senderName: "System",
+    recipientName: null,
+    text: `${voter.name} voted yes.`,
+    sentAt: new Date().toISOString()
+  });
+
+  if (remainingVoterIds.length === 0) {
+    resolveConviction(room, accusation);
+  }
+
+  io.to(roomCode).emit("room_updated", publicRoom(room));
+
+  console.log(rooms);
+}
+
+function advanceFinalAccuser(room) {
+  if (!room.game) {
+    throw new Error("Cannot advance final accuser without game");
+  }
+
+  if (!room.game.finalAccusation) {
+    throw new Error("Cannot advance final accuser without final accusation state");
+  }
+
+  const nextIndex = room.game.finalAccusation.currentAccuserIndex + 1;
+
+  if (nextIndex >= room.game.finalAccusation.accuserOrderIds.length) {
+    resolveFinalAccusationsFailed(room);
+    return;
+  }
+
+  room.game.finalAccusation.currentAccuserIndex = nextIndex;
+  room.game.phase = "final_accusing";
+
+  const nextAccuser = room.players.find(player => {
+    return player.id === room.game.finalAccusation.accuserOrderIds[nextIndex];
+  });
+
+  if (!nextAccuser) {
+    throw new Error(`Final accuser ${room.game.finalAccusation.accuserOrderIds[nextIndex]} is missing`);
+  }
+
+  room.messages.push({
+    type: "system",
+    senderId: null,
+    senderName: "System",
+    recipientName: null,
+    text: `${nextAccuser.name} makes the next final accusation.`,
+    sentAt: new Date().toISOString()
+  });
+}
+
+function resolveFinalAccusationsFailed(room) {
+  if (!room.game) {
+    throw new Error("Cannot resolve final accusations without game");
+  }
+
+  const spy = room.players.find(player => player.id === room.game.spyId);
+
+  if (!spy) {
+    throw new Error(`Spy ${room.game.spyId} is missing from players`);
+  }
+
+  clearRoundTimer(room);
+
+  room.game.finalAccusation.endedAt = new Date().toISOString();
+  room.game.finalAccusation.result = "all_failed";
+
+  room.game.result = {
+    winner: "spy",
+    reason: "final_accusations_failed",
+    spyName: spy.name,
+    location: room.game.location,
+    endedAt: new Date().toISOString()
+  };
+
+  room.status = "finished";
+
+  room.messages.push({
+    type: "system",
+    senderId: null,
+    senderName: "System",
+    recipientName: null,
+    text: `All final accusations failed. The spy was ${spy.name}. Spy wins.`,
+    sentAt: new Date().toISOString()
+  });
+
+  room.messages.push({
+    type: "system",
+    senderId: null,
+    senderName: "System",
+    recipientName: null,
+    text: `Location was ${room.game.location}.`,
+    sentAt: new Date().toISOString()
+  });
+}
 
 function validatePlayerInput(name, email) {
   if (typeof name !== "string") {
@@ -888,9 +1318,43 @@ function validateVoteInput(vote) {
   }
 }
 
-function validateBeliefUpdateForPlayer(beliefUpdate, playerId, questionerBelief, answererBelief) {
+function validateBeliefUpdateForPlayer(
+  beliefUpdate,
+  spyId,
+  playerId,
+  questionerBelief,
+  answererBelief,
+  suspectedLocations
+) {
   const cleanQuestionerBelief = normalizeBeliefValue(questionerBelief);
   const cleanAnswererBelief = normalizeBeliefValue(answererBelief);
+  const suspectedLocationValidation = normalizeSuspectedLocations(suspectedLocations);
+
+  if (suspectedLocationValidation.error) {
+    return { error: suspectedLocationValidation.error };
+  }
+
+  const cleanSuspectedLocations = suspectedLocationValidation.suspectedLocations;
+
+  if (playerId === spyId) {
+    if (cleanQuestionerBelief !== null || cleanAnswererBelief !== null) {
+      return { error: "Spy cannot submit player belief updates" };
+    }
+
+    if (cleanSuspectedLocations.length === 0) {
+      return { error: "Spy must submit suspected locations or none" };
+    }
+
+    return {
+      questionerBelief: null,
+      answererBelief: null,
+      suspectedLocations: cleanSuspectedLocations
+    };
+  }
+
+  if (cleanSuspectedLocations.length > 0) {
+    return { error: "Only spy can submit suspected locations" };
+  }
 
   if (playerId === beliefUpdate.questionerId) {
     if (cleanQuestionerBelief !== null) {
@@ -903,7 +1367,8 @@ function validateBeliefUpdateForPlayer(beliefUpdate, playerId, questionerBelief,
 
     return {
       questionerBelief: null,
-      answererBelief: cleanAnswererBelief
+      answererBelief: cleanAnswererBelief,
+      suspectedLocations: []
     };
   }
 
@@ -918,7 +1383,8 @@ function validateBeliefUpdateForPlayer(beliefUpdate, playerId, questionerBelief,
 
     return {
       questionerBelief: cleanQuestionerBelief,
-      answererBelief: null
+      answererBelief: null,
+      suspectedLocations: []
     };
   }
 
@@ -932,7 +1398,8 @@ function validateBeliefUpdateForPlayer(beliefUpdate, playerId, questionerBelief,
 
   return {
     questionerBelief: cleanQuestionerBelief,
-    answererBelief: cleanAnswererBelief
+    answererBelief: cleanAnswererBelief,
+    suspectedLocations: []
   };
 }
 
@@ -942,6 +1409,52 @@ function normalizeBeliefValue(value) {
   }
 
   return value;
+}
+
+function normalizeSuspectedLocations(suspectedLocations) {
+  if (suspectedLocations === undefined || suspectedLocations === null) {
+    return { suspectedLocations: [] };
+  }
+
+  if (!Array.isArray(suspectedLocations)) {
+    return { error: "Suspected locations must be a list" };
+  }
+
+  const cleanSuspectedLocations = suspectedLocations.map(location => {
+    if (typeof location !== "string") {
+      return location;
+    }
+
+    return location.trim();
+  });
+
+  if (cleanSuspectedLocations.find(location => typeof location !== "string")) {
+    return { error: "Suspected locations must be strings" };
+  }
+
+  if (cleanSuspectedLocations.includes("none") && cleanSuspectedLocations.length > 1) {
+    return { error: "Cannot choose none with suspected locations" };
+  }
+
+  const uniqueLocations = new Set(cleanSuspectedLocations);
+
+  if (uniqueLocations.size !== cleanSuspectedLocations.length) {
+    return { error: "Suspected locations must not contain duplicates" };
+  }
+
+  if (cleanSuspectedLocations.includes("none")) {
+    return { suspectedLocations: ["none"] };
+  }
+
+  const invalidLocation = cleanSuspectedLocations.find(location => {
+    return !LOCATIONS.includes(location);
+  });
+
+  if (invalidLocation) {
+    return { error: "Suspected location is not valid" };
+  }
+
+  return { suspectedLocations: cleanSuspectedLocations };
 }
 
 function validateLocationGuessInput(location) {
@@ -1025,6 +1538,8 @@ function resolveSpyGuess(room, guessedLocation) {
     throw new Error(`Spy ${room.game.spyId} is missing from players`);
   }
 
+  clearRoundTimer(room);
+
   if (room.game.accusation) {
     room.game.accusation.result = "interrupted_by_spy_guess";
     room.game.accusation.endedAt = new Date().toISOString();
@@ -1089,6 +1604,8 @@ function resolveConviction(room, accusation) {
     throw new Error(`Spy ${room.game.spyId} is missing from players`);
   }
 
+  clearRoundTimer(room);
+
   const accusedWasSpy = accused.id === room.game.spyId;
 
   accusation.result = "convicted";
@@ -1096,6 +1613,13 @@ function resolveConviction(room, accusation) {
 
   room.game.accusations.push(accusation);
   room.game.accusation = null;
+
+  if (room.game.finalAccusation && room.game.finalAccusation.accusation === accusation) {
+    room.game.finalAccusation.accusations.push(accusation);
+    room.game.finalAccusation.accusation = null;
+    room.game.finalAccusation.result = "convicted";
+    room.game.finalAccusation.endedAt = new Date().toISOString();
+  }
 
   if (room.game.beliefUpdate) {
     room.game.beliefUpdate.result = "interrupted_by_conviction";
@@ -1155,6 +1679,7 @@ function leaveRoom(socket) {
   delete socket.data.roomCode;
 
   if (room.players.length === 0) {
+    clearRoundTimer(room);
     rooms.delete(roomCode);
     return;
   }
@@ -1172,6 +1697,8 @@ function destroyRoom(roomCode, message) {
   if (!room) {
     throw new Error(`Tried to destroy missing room ${roomCode}`);
   }
+
+  clearRoundTimer(room);
 
   io.to(roomCode).emit("room_destroyed", { message });
 
@@ -1197,12 +1724,16 @@ function publicRoom(room) {
   let turn = null;
   let beliefUpdate = null;
   let accusation = null;
+  let finalAccusation = null;
   let result = null;
+  let roundEndsAt = null;
 
   if (room.status === "playing") {
     if (!room.game) {
       throw new Error("Playing room has no game");
     }
+
+    roundEndsAt = room.game.roundEndsAt;
 
     const currentQuestioner = room.players.find(player => {
       return player.id === room.game.currentQuestionerId;
@@ -1288,6 +1819,63 @@ function publicRoom(room) {
         }))
       };
     }
+
+    if (room.game.finalAccusation) {
+      const currentAccuserId = room.game.finalAccusation.accuserOrderIds[
+        room.game.finalAccusation.currentAccuserIndex
+      ];
+
+      const currentAccuser = room.players.find(player => {
+        return player.id === currentAccuserId;
+      });
+
+      if (!currentAccuser) {
+        throw new Error(`Final accuser ${currentAccuserId} is missing from players`);
+      }
+
+      finalAccusation = {
+        currentAccuserName: currentAccuser.name,
+        currentAccuserNumber: room.game.finalAccusation.currentAccuserIndex + 1,
+        totalAccusers: room.game.finalAccusation.accuserOrderIds.length,
+        accusedName: null,
+        pendingVoterNames: [],
+        votes: []
+      };
+
+      if (room.game.finalAccusation.accusation) {
+        const activeFinalAccusation = room.game.finalAccusation.accusation;
+
+        const accused = room.players.find(player => {
+          return player.id === activeFinalAccusation.accusedId;
+        });
+
+        if (!accused) {
+          throw new Error(`Final accused ${activeFinalAccusation.accusedId} is missing from players`);
+        }
+
+        const pendingVoterNames = activeFinalAccusation.votingPlayerIds
+          .filter(voterId => {
+            return !activeFinalAccusation.votes.find(vote => vote.voterId === voterId);
+          })
+          .map(voterId => {
+            const voter = room.players.find(player => player.id === voterId);
+
+            if (!voter) {
+              throw new Error(`Final pending voter ${voterId} is missing from players`);
+            }
+
+            return voter.name;
+          });
+
+        finalAccusation.accusedName = accused.name;
+        finalAccusation.pendingVoterNames = pendingVoterNames;
+        finalAccusation.votes = activeFinalAccusation.votes.map(vote => ({
+          voterName: vote.voterName,
+          vote: vote.vote,
+          automatic: vote.automatic
+        }));
+      }
+    }
   }
 
   if (room.status === "finished") {
@@ -1307,7 +1895,9 @@ function publicRoom(room) {
     turn,
     beliefUpdate,
     accusation,
+    finalAccusation,
     result,
+    roundEndsAt,
     locations: LOCATIONS,
     players: room.players.map(player => ({
       name: player.name,
