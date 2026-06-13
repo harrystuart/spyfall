@@ -1,85 +1,153 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Spyfall</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,600,0,0" />
+    <link rel="stylesheet" href="/styles.css" />
   </head>
+
   <body>
-    <h1>Spyfall</h1>
+    <main class="page">
+      <section id="entry-screen" class="card">
+        <header class="header">
+          <p class="eyebrow">Spyfall</p>
+          <h1>Join a game</h1>
+          <p class="subtitle">
+            Enter your details, then create a new room or join an existing one.
+          </p>
+        </header>
 
-    <input id="name" placeholder="Username" />
-    <input id="email" placeholder="Email" />
+        <form class="room-form">
+          <div class="field">
+            <label for="name">Name</label>
+            <input id="name" name="name" type="text" autocomplete="name" placeholder="Your name" />
+          </div>
 
-    <button id="create-room">Create room</button>
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" />
+          </div>
 
-    <input id="room-code" placeholder="Room code" />
-    <button id="join-room">Join room</button>
+          <div class="divider"></div>
 
-    <button id="start-game">Start game</button>
-    <button id="leave-room">Leave room</button>
+          <button id="create-room" class="button button-primary" type="button">
+            Create room
+          </button>
 
-    <p id="status"></p>
+          <div class="join-row">
+            <div class="field">
+              <label for="room-code">Room code</label>
+              <input
+                id="room-code"
+                name="room-code"
+                type="text"
+                inputmode="text"
+                maxlength="4"
+                placeholder="ABCD"
+              />
+            </div>
 
-    <h2>Your role</h2>
-    <p id="role"></p>
+            <button id="join-room" class="button button-secondary" type="button">
+              Join
+            </button>
+          </div>
+        </form>
+      </section>
 
-    <h2>Timer</h2>
-    <p id="timer"></p>
+      <section id="lobby-screen" class="card is-hidden">
+        <header class="header">
+          <p class="eyebrow">Spyfall</p>
+          <h1>Lobby</h1>
+          <p class="subtitle">
+            Share the room code with the other players.
+          </p>
+        </header>
 
-    <h2>Turn</h2>
-    <p id="turn"></p>
+        <div class="room-code-panel">
+          <span>Room code</span>
+          <strong id="lobby-room-code">----</strong>
+        </div>
 
-    <h2>Result</h2>
-    <p id="result"></p>
+        <section class="lobby-section">
+          <div class="section-heading">
+            <h2>Players</h2>
+            <span class="player-requirements">3 min · 8 max</span>
+          </div>
 
-    <h2>Belief update</h2>
-    <p id="belief-update"></p>
+          <ul id="lobby-players" class="player-list"></ul>
+        </section>
 
-    <p id="belief-questioner-line">Does the questioner seem more or less like a spy?</p>
-    <select id="questioner-belief">
-      <option value="">blank</option>
-      <option value="-">-</option>
-      <option value="N">N</option>
-      <option value="+">+</option>
-    </select>
+        <div class="lobby-actions">
+          <button id="start-game" class="button button-primary" type="button">
+            Start game
+          </button>
 
-    <p id="belief-answerer-line">Does the answerer seem more or less like a spy?</p>
-    <select id="answerer-belief">
-      <option value="">blank</option>
-      <option value="-">-</option>
-      <option value="N">N</option>
-      <option value="+">+</option>
-    </select>
+          <button id="leave-room" class="button button-secondary" type="button">
+            Leave room
+          </button>
+        </div>
+      </section>
 
-    <p>Spy suspected locations</p>
-    <div id="suspected-locations"></div>
+      <section id="game-screen" class="game-shell is-hidden">
+        <aside class="left-panel">
+          <section class="mini-card role-card">
+            <p class="mini-label">Your role</p>
+            <p id="role" class="role-text">Waiting for role.</p>
+          </section>
 
-    <button id="submit-belief-update">Submit belief update</button>
+          <section class="game-state-card">
+            <p class="mini-label">Game state</p>
+            <p id="game-state" class="game-state-text">Waiting for game state.</p>
+          </section>
 
-    <h2>Spy guess</h2>
-    <select id="spy-guess-location"></select>
-    <button id="spy-guess">Guess location</button>
+          <section class="mini-card">
+            <div class="section-heading">
+              <h2>Players</h2>
+              <span class="player-requirements">In game</span>
+            </div>
+            <ul id="game-players" class="compact-list"></ul>
+          </section>
+        </aside>
 
-    <h2>Accusation</h2>
-    <p id="accusation"></p>
-    <button id="vote-yes">Vote yes</button>
-    <button id="vote-no">Vote no</button>
+        <section class="chat-panel">
+          <header class="chat-header">
+            <div>
+              <p class="eyebrow">Spyfall</p>
+              <h1>Questions</h1>
+            </div>
 
-    <h2>Final accusation</h2>
-    <p id="final-accusation"></p>
+            <section class="timer-card">
+              <p class="mini-label">Timer</p>
+              <p id="game-timer" class="timer-text">--:--</p>
+            </section>
+          </header>
 
-    <h3>Start accusation</h3>
-    <select id="accused"></select>
-    <button id="start-accusation">Accuse</button>
+          <ul id="messages" class="message-list"></ul>
 
-    <h2>Players</h2>
-    <ul id="players"></ul>
+          <div id="chat-controls" class="chat-controls">
+            <select id="answerer" class="select"></select>
+            <input id="chat-message" class="chat-input" placeholder="Type your question or answer" />
+            <button id="send-chat-message" class="button button-primary" type="button">
+              Send
+            </button>
+          </div>
+        </section>
 
-    <h2>Q&A</h2>
-    <ul id="messages"></ul>
+        <aside class="right-panel">
+          <section class="mini-card locations-card">
+            <div class="section-heading">
+              <h2>Locations</h2>
+              <span class="player-requirements">Reference</span>
+            </div>
+            <ul id="locations" class="location-list"></ul>
+          </section>
+        </aside>
+      </section>
 
-    <select id="answerer"></select>
-    <input id="chat-message" placeholder="Message" />
-    <button id="send-chat-message">Send</button>
+      <p id="status" class="status" aria-live="polite"></p>
+    </main>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="/app.js"></script>
