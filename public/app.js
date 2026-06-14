@@ -65,6 +65,7 @@ let statusTimer = null;
 
 const submittedBeliefUpdateKeys = new Set();
 const submittedVoteKeys = new Set();
+const beliefDrafts = new Map();
 
 setInterval(renderGameTimer, 1000);
 
@@ -203,6 +204,39 @@ messagesList.addEventListener("click", event => {
   if (voteButton && !voteButton.disabled) {
     submitAccusationVote(voteButton);
   }
+});
+
+messagesList.addEventListener("change", event => {
+  const prompt = event.target.closest(".belief-prompt");
+
+  if (!prompt) {
+    return;
+  }
+
+  const submitButton = prompt.querySelector(".submit-belief-button");
+
+  if (!submitButton) {
+    return;
+  }
+
+  const beliefKey = submitButton.dataset.beliefKey;
+
+  if (!beliefKey) {
+    return;
+  }
+
+  const questionerRadio = prompt.querySelector("input[data-belief-target='questioner']:checked");
+  const answererRadio = prompt.querySelector("input[data-belief-target='answerer']:checked");
+
+  const suspectedLocations = Array.from(
+    prompt.querySelectorAll("input[data-belief-location]:checked")
+  ).map(input => input.value);
+
+  beliefDrafts.set(beliefKey, {
+    questionerBelief: questionerRadio ? questionerRadio.value : "",
+    answererBelief: answererRadio ? answererRadio.value : "",
+    suspectedLocations
+  });
 });
 
 roomCodeInput.addEventListener("input", () => {
@@ -993,6 +1027,12 @@ function createBeliefPrompt(room) {
     return null;
   }
 
+  const draft = beliefDrafts.get(beliefKey) || {
+    questionerBelief: "",
+    answererBelief: "",
+    suspectedLocations: []
+  };
+
   const prompt = document.createElement("li");
   prompt.className = "temporary-message belief-prompt";
 
@@ -1002,9 +1042,9 @@ function createBeliefPrompt(room) {
   prompt.appendChild(intro);
 
   if (assignedRoleKind === "spy") {
-    prompt.appendChild(createSpyBeliefForm(room));
+    prompt.appendChild(createSpyBeliefForm(room, draft));
   } else {
-    prompt.appendChild(createAgentBeliefForm(room));
+    prompt.appendChild(createAgentBeliefForm(room, draft));
   }
 
   const actions = document.createElement("div");
@@ -1022,7 +1062,7 @@ function createBeliefPrompt(room) {
   return prompt;
 }
 
-function createAgentBeliefForm(room) {
+function createAgentBeliefForm(room, draft) {
   const form = document.createElement("div");
   form.className = "belief-form";
 
@@ -1035,21 +1075,23 @@ function createAgentBeliefForm(room) {
   if (!currentUserIsQuestioner) {
     form.appendChild(createBeliefScaleQuestion(
       "questioner",
-      `Does ${questionerName} seem more or less like a spy?`
+      `Does ${questionerName} seem more or less like a spy?`,
+      draft.questionerBelief
     ));
   }
 
   if (!currentUserIsAnswerer) {
     form.appendChild(createBeliefScaleQuestion(
       "answerer",
-      `Does ${answererName} seem more or less like a spy?`
+      `Does ${answererName} seem more or less like a spy?`,
+      draft.answererBelief
     ));
   }
 
   return form;
 }
 
-function createSpyBeliefForm(room) {
+function createSpyBeliefForm(room, draft) {
   const form = document.createElement("div");
   form.className = "belief-form";
 
@@ -1071,6 +1113,7 @@ function createSpyBeliefForm(room) {
     checkbox.type = "checkbox";
     checkbox.value = location;
     checkbox.dataset.beliefLocation = "true";
+    checkbox.checked = draft.suspectedLocations.includes(location);
 
     const text = document.createElement("span");
     text.textContent = location;
@@ -1085,7 +1128,7 @@ function createSpyBeliefForm(room) {
   return form;
 }
 
-function createBeliefScaleQuestion(target, labelText) {
+function createBeliefScaleQuestion(target, labelText, selectedValue = "") {
   const wrapper = document.createElement("div");
   wrapper.className = "belief-scale";
 
@@ -1112,6 +1155,7 @@ function createBeliefScaleQuestion(target, labelText) {
     input.name = `belief-${target}`;
     input.value = choice.value;
     input.dataset.beliefTarget = target;
+    input.checked = choice.value === selectedValue;
 
     const span = document.createElement("span");
     span.textContent = choice.label;
@@ -1432,6 +1476,7 @@ function resetGameLocalState() {
   pendingGuessConfirmationLocation = null;
   submittedBeliefUpdateKeys.clear();
   submittedVoteKeys.clear();
+  beliefDrafts.clear();
   closeGuessConfirmation();
 }
 

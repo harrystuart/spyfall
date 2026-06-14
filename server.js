@@ -1938,12 +1938,12 @@ function saveRoom(room, reason) {
 
   fs.mkdirSync(ROOM_SNAPSHOT_DIR, { recursive: true });
 
-  const filename = `${room.id}.json`;
+  const filename = `${room.code}_${room.id}.json`;
   const filePath = path.join(ROOM_SNAPSHOT_DIR, filename);
 
   fs.writeFileSync(filePath, JSON.stringify(room, null, 2));
 
-  console.log(`Saved room ${room.id} to /rooms/${filename}`);
+  console.log(`Saved room ${room.id} with code ${room.code} to /rooms/${filename}`);
 
   return `/rooms/${filename}`;
 }
