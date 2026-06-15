@@ -20,7 +20,8 @@ const SPY_BELIEF_LOCATION_OPTION_COUNT = 6;
 const ROOM_KIND_PRIVATE = "private";
 const ROOM_KIND_RANDOM = "random";
 
-const ROOM_SNAPSHOT_DIR = path.join(process.cwd(), "public", "rooms");
+const ROOM_SNAPSHOT_DIR =
+  process.env.ROOM_SNAPSHOT_DIR || path.join(process.cwd(), "data", "rooms");
 
 const rooms = new Map();
 
@@ -2006,9 +2007,9 @@ function saveRoom(room, reason) {
 
   fs.writeFileSync(filePath, JSON.stringify(room, null, 2));
 
-  console.log(`Saved room ${room.id} with code ${room.code} to /rooms/${filename}`);
+  console.log(`Saved room ${room.id} with code ${room.code} to ${filePath}`);
 
-  return `/rooms/${filename}`;
+  return filePath;
 }
 
 function chooseSpyBeliefLocationOptions() {
