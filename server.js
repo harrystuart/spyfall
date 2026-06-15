@@ -30,7 +30,7 @@ app.use(express.static("public"));
 io.on("connection", socket => {
   console.log("connected", socket.id);
 
-  socket.on("create_room", ({ name, playerId }) => {
+  socket.on("create_room", ({ name, playerId, playerSignature }) => {
     if (socket.data.roomCode) {
       socket.emit("app_error", "You are already in a room");
       return;
@@ -43,8 +43,15 @@ io.on("connection", socket => {
       return;
     }
 
+    const playerSignatureError = validatePlayerSignatureInput(playerSignature);
+
+    if (playerSignatureError) {
+      socket.emit("app_error", playerSignatureError);
+      return;
+    }
+
     const code = createUniqueRoomCode();
-    const player = createPlayer(socket.id, name, playerId);
+    const player = createPlayer(socket.id, name, playerId, playerSignature);
 
     rooms.set(code, {
       id: crypto.randomUUID(),
@@ -69,7 +76,7 @@ io.on("connection", socket => {
     console.log(rooms);
   });
 
-  socket.on("join_room", ({ code, name, playerId }) => {
+  socket.on("join_room", ({ code, name, playerId, playerSignature }) => {
     if (socket.data.roomCode) {
       socket.emit("app_error", "You are already in a room");
       return;
@@ -86,6 +93,13 @@ io.on("connection", socket => {
 
     if (playerError) {
       socket.emit("app_error", playerError);
+      return;
+    }
+
+    const playerSignatureError = validatePlayerSignatureInput(playerSignature);
+
+    if (playerSignatureError) {
+      socket.emit("app_error", playerSignatureError);
       return;
     }
 
@@ -114,7 +128,7 @@ io.on("connection", socket => {
       return;
     }
 
-    const player = createPlayer(socket.id, name, playerId);
+    const player = createPlayer(socket.id, name, playerId, playerSignature);
 
     room.players.push(player);
     socket.data.roomCode = roomCode;
@@ -126,7 +140,7 @@ io.on("connection", socket => {
     console.log(rooms);
   });
 
-  socket.on("join_random_room", ({ name, playerId }) => {
+  socket.on("join_random_room", ({ name, playerId, playerSignature }) => {
     if (socket.data.roomCode) {
       socket.emit("app_error", "You are already in a room");
       return;
@@ -139,10 +153,17 @@ io.on("connection", socket => {
       return;
     }
 
+    const playerSignatureError = validatePlayerSignatureInput(playerSignature);
+
+    if (playerSignatureError) {
+      socket.emit("app_error", playerSignatureError);
+      return;
+    }
+
     const existingRoom = findAvailableRandomRoom(name, playerId);
 
     if (existingRoom) {
-      const player = createPlayer(socket.id, name, playerId);
+      const player = createPlayer(socket.id, name, playerId, playerSignature);
 
       existingRoom.players.push(player);
       socket.data.roomCode = existingRoom.code;
@@ -156,7 +177,7 @@ io.on("connection", socket => {
     }
 
     const code = createUniqueRoomCode();
-    const player = createPlayer(socket.id, name, playerId);
+    const player = createPlayer(socket.id, name, playerId, playerSignature);
 
     const room = {
       id: crypto.randomUUID(),
@@ -1546,13 +1567,14 @@ function validateUniquePlayerInRoom(room, name, playerId) {
   }
 }
 
-function createPlayer(id, name, playerId) {
+function createPlayer(id, name, playerId, playerSignature) {
   const cleanPlayerId = typeof playerId === "string" ? playerId.trim() : "";
 
   return {
     id,
     name: name.trim(),
     playerId: cleanPlayerId || null,
+    playerSignature: playerSignature.trim().toLowerCase(),
     joinedAt: new Date().toISOString()
   };
 }
@@ -2064,6 +2086,18 @@ function findAvailableRandomRoom(name, playerId) {
   }
 
   return null;
+}
+
+function validatePlayerSignatureInput(playerSignature) {
+  if (typeof playerSignature !== "string") {
+    return "Player signature is required";
+  }
+
+  const cleanPlayerSignature = playerSignature.trim();
+
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(cleanPlayerSignature)) {
+    return "Player signature is invalid";
+  }
 }
 
 const PORT = process.env.PORT || 3000;

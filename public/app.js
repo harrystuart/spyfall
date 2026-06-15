@@ -1,5 +1,8 @@
 const socket = io();
 
+const PLAYER_SIGNATURE_STORAGE_KEY = "spyhunt.playerSignature";
+const playerSignature = getOrCreatePlayerSignature();
+
 const MIN_PLAYERS = 3;
 const MAX_PLAYERS = 8;
 
@@ -126,7 +129,8 @@ createRoomButton.addEventListener("click", () => {
 
   socket.emit("create_room", {
     name: nameInput.value,
-    playerId: playerIdInput.value
+    playerId: playerIdInput.value,
+    playerSignature
   });
 });
 
@@ -136,7 +140,8 @@ joinRandomRoomButton.addEventListener("click", () => {
 
   socket.emit("join_random_room", {
     name: nameInput.value,
-    playerId: playerIdInput.value
+    playerId: playerIdInput.value,
+    playerSignature
   });
 });
 
@@ -147,7 +152,8 @@ joinRoomButton.addEventListener("click", () => {
   socket.emit("join_room", {
     code: roomCodeInput.value,
     name: nameInput.value,
-    playerId: playerIdInput.value
+    playerId: playerIdInput.value,
+    playerSignature
   });
 });
 
@@ -1883,6 +1889,19 @@ function renderRoomIdBadge() {
 
   roomIdBadge.hidden = false;
   roomIdBadge.textContent = `Room ${latestRoom.id}`;
+}
+
+function getOrCreatePlayerSignature() {
+  const existingSignature = localStorage.getItem(PLAYER_SIGNATURE_STORAGE_KEY);
+
+  if (existingSignature) {
+    return existingSignature;
+  }
+
+  const newSignature = window.crypto.randomUUID();
+  localStorage.setItem(PLAYER_SIGNATURE_STORAGE_KEY, newSignature);
+
+  return newSignature;
 }
 
 showEntry();
