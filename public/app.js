@@ -37,6 +37,10 @@ const sendChatMessageButton = document.querySelector("#send-chat-message");
 const statusText = document.querySelector("#status");
 const roomIdBadge = document.querySelector("#room-id-badge");
 
+const helpButton = document.querySelector("#help-button");
+const helpModal = document.querySelector("#help-modal");
+const closeHelpModalButton = document.querySelector("#close-help-modal");
+
 let lobbyWaitingText = document.querySelector("#lobby-waiting-text");
 
 roomCodeInput.value = "";
@@ -85,6 +89,21 @@ socket.on("connect_error", () => {
   showError("Could not connect to server.");
   setEntryBusy(false);
   setLobbyBusy(false);
+});
+
+window.addEventListener("resize", scheduleHelpButtonPosition);
+window.addEventListener("load", scheduleHelpButtonPosition);
+
+helpButton.addEventListener("click", () => {
+  openHelpModal();
+});
+
+closeHelpModalButton.addEventListener("click", () => {
+  closeHelpModal();
+});
+
+helpModal.querySelector(".modal-backdrop").addEventListener("click", () => {
+  closeHelpModal();
 });
 
 createRoomButton.addEventListener("click", () => {
@@ -200,6 +219,7 @@ guessConfirmationModal.confirmButton.addEventListener("click", () => {
 document.addEventListener("keydown", event => {
   if (event.key === "Escape") {
     closeGuessConfirmation();
+    closeHelpModal();
   }
 });
 
@@ -385,6 +405,64 @@ function sendChatMessage() {
   chatMessageInput.value = "";
 }
 
+function openHelpModal() {
+  helpModal.classList.remove("is-hidden");
+  helpModal.setAttribute("aria-hidden", "false");
+  closeHelpModalButton.focus();
+}
+
+function closeHelpModal() {
+  helpModal.classList.add("is-hidden");
+  helpModal.setAttribute("aria-hidden", "true");
+}
+
+let helpButtonPositionFrame = null;
+
+function scheduleHelpButtonPosition() {
+  if (helpButtonPositionFrame) {
+    cancelAnimationFrame(helpButtonPositionFrame);
+  }
+
+  helpButtonPositionFrame = requestAnimationFrame(() => {
+    helpButtonPositionFrame = null;
+    updateHelpButtonPosition();
+  });
+}
+
+function updateHelpButtonPosition() {
+  if (!helpButton) {
+    return;
+  }
+
+  const activeInterface = getActiveInterfaceElement();
+
+  if (!activeInterface) {
+    return;
+  }
+
+  const interfaceRect = activeInterface.getBoundingClientRect();
+  const buttonRect = helpButton.getBoundingClientRect();
+  const gap = 12;
+  const viewportPadding = 18;
+
+  const preferredLeft = interfaceRect.right + gap;
+  const maxLeft = window.innerWidth - buttonRect.width - viewportPadding;
+
+  const preferredTop = interfaceRect.top;
+  const minTop = viewportPadding;
+
+  helpButton.style.left = `${Math.min(preferredLeft, maxLeft)}px`;
+  helpButton.style.top = `${Math.max(preferredTop, minTop)}px`;
+}
+
+function getActiveInterfaceElement() {
+  const interfaces = [entryScreen, lobbyScreen, gameScreen];
+
+  return interfaces.find(element => {
+    return element && !element.classList.contains("is-hidden");
+  });
+}
+
 function openGuessConfirmation(location) {
   pendingGuessConfirmationLocation = location;
   guessConfirmationModal.locationText.textContent = location;
@@ -503,6 +581,8 @@ function showEntry() {
   closeGuessConfirmation();
   renderGameTimer();
   renderRoomIdBadge();
+  helpButton.classList.toggle("is-pulsing", true);
+  scheduleHelpButtonPosition();
 }
 
 function showLobby() {
@@ -517,6 +597,8 @@ function showLobby() {
   closeGuessConfirmation();
   renderGameTimer();
   renderRoomIdBadge();
+  helpButton.classList.toggle("is-pulsing", true);
+  scheduleHelpButtonPosition();
 }
 
 function showGame() {
@@ -525,6 +607,8 @@ function showGame() {
   gameScreen.classList.remove("is-hidden");
   lobbyWaitingText.hidden = true;
   renderRoomIdBadge();
+  helpButton.classList.toggle("is-pulsing", false);
+  scheduleHelpButtonPosition();
 }
 
 function renderLobby(room) {
@@ -956,7 +1040,19 @@ function renderLocations(room) {
 
     const name = document.createElement("span");
     name.className = "location-name-line";
-    name.textContent = location;
+
+    const nameText = document.createElement("span");
+    nameText.className = "location-name-text";
+    nameText.textContent = location;
+    name.appendChild(nameText);
+
+    if (isOwnAgentLocation) {
+      const secretBadge = document.createElement("span");
+      secretBadge.className = "secret-location-badge";
+      secretBadge.textContent = "Secret";
+      name.appendChild(secretBadge);
+    }
+
     item.appendChild(name);
 
     const tooltip = document.createElement("span");
@@ -1721,3 +1817,5 @@ function renderRoomIdBadge() {
   roomIdBadge.hidden = false;
   roomIdBadge.textContent = `Room ${latestRoom.id}`;
 }
+
+showEntry()

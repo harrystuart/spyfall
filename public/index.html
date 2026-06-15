@@ -151,6 +151,28 @@
         </aside>
       </section>
 
+      <button id="help-button" class="help-button" type="button" aria-label="Open rules">
+        ?
+      </button>
+
+      <div id="help-modal" class="modal-overlay is-hidden" aria-hidden="true">
+        <div class="modal-backdrop"></div>
+
+        <section class="confirmation-modal help-modal-card" role="dialog" aria-modal="true" aria-labelledby="help-modal-title">
+          <button id="close-help-modal" class="modal-close" type="button" aria-label="Close">
+            ×
+          </button>
+
+          <p class="mini-label">Rules</p>
+
+          <h2 id="help-modal-title">How to play Spyhunt</h2>
+
+          <p class="modal-copy">
+            Placeholder rules text. This is where we will explain how the game works.
+          </p>
+        </section>
+      </div>
+
       <p id="status" class="status" aria-live="polite"></p>
 
       <p id="disclaimer-badge" class="disclaimer-badge">
