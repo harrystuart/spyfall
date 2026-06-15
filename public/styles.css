@@ -765,6 +765,7 @@ select:disabled {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 10px;
+  min-height: 56px;
 }
 
 .location-name-line {
@@ -773,6 +774,9 @@ select:disabled {
   width: 100%;
   min-width: 0;
   gap: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .location-name-text {
