@@ -2084,15 +2084,31 @@ function saveRoom(room, reason) {
     throw new Error("Cannot save room without id");
   }
 
-  room.savedAt = new Date().toISOString();
-  room.saveReason = reason;
+  const snapshot = {
+    savedAt: new Date().toISOString(),
+    saveReason: reason,
+    gameConfig: {
+      minPlayers: MIN_PLAYERS,
+      maxPlayers: MAX_PLAYERS,
+      maxChatMessageLength: MAX_CHAT_MESSAGE_LENGTH,
+      roundSeconds: ROUND_SECONDS,
+      beliefValues: [...BELIEF_VALUES],
+      spyBeliefLocationOptionCount: SPY_BELIEF_LOCATION_OPTION_COUNT,
+      locations: [...LOCATIONS],
+      roomKinds: {
+        private: ROOM_KIND_PRIVATE,
+        random: ROOM_KIND_RANDOM
+      }
+    },
+    room
+  };
 
   fs.mkdirSync(ROOM_SNAPSHOT_DIR, { recursive: true });
 
   const filename = `${room.code}_${room.id}.json`;
   const filePath = path.join(ROOM_SNAPSHOT_DIR, filename);
 
-  fs.writeFileSync(filePath, JSON.stringify(room, null, 2));
+  fs.writeFileSync(filePath, JSON.stringify(snapshot, null, 2));
 
   console.log(`Saved room ${room.id} with code ${room.code} to ${filePath}`);
 

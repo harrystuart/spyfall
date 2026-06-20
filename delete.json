@@ -1,0 +1,909 @@
+{
+  "id": "daaf8427-e66a-4ab3-9eea-0954cba7a1ca",
+  "code": "HJUH",
+  "kind": "private",
+  "hostId": "JJV066Q4VkCPgUe1AAB7",
+  "status": "finished",
+  "createdAt": "2026-06-17T14:58:17.030Z",
+  "players": [
+    {
+      "id": "JJV066Q4VkCPgUe1AAB7",
+      "name": "Marmoush",
+      "playerId": null,
+      "playerSignature": "da30a649-824d-4fa5-85e7-fd8033dc0cca",
+      "joinedAt": "2026-06-17T15:02:37.294Z"
+    }
+  ],
+  "playedPlayers": [
+    {
+      "id": "o6jC-F4HO4hmbZP9AAB3",
+      "name": "Harry",
+      "playerId": null,
+      "playerSignature": "80de54bc-fc47-48d7-960c-b880afb00649",
+      "joinedAt": "2026-06-17T14:58:17.030Z"
+    },
+    {
+      "id": "wn2Gsn-ygc9kh8JsAAB5",
+      "name": "Five",
+      "playerId": null,
+      "playerSignature": "51086e0e-eebf-464d-aeb1-5247d3b58a3b",
+      "joinedAt": "2026-06-17T15:02:27.829Z"
+    },
+    {
+      "id": "JJV066Q4VkCPgUe1AAB7",
+      "name": "Marmoush",
+      "playerId": null,
+      "playerSignature": "da30a649-824d-4fa5-85e7-fd8033dc0cca",
+      "joinedAt": "2026-06-17T15:02:37.294Z"
+    },
+    {
+      "id": "ldGudggj_7VMZLEZAAB9",
+      "name": "FJ",
+      "playerId": "fj2000",
+      "playerSignature": "f7c34d7e-8f56-4dab-b61b-6a441cceb0fd",
+      "joinedAt": "2026-06-17T15:02:38.063Z"
+    }
+  ],
+  "messages": [
+    {
+      "type": "system",
+      "senderId": null,
+      "senderName": "System",
+      "recipientName": null,
+      "text": "Game started. Timer: 900 seconds.",
+      "sentAt": "2026-06-17T15:03:56.062Z"
+    },
+    {
+      "type": "question",
+      "senderId": "wn2Gsn-ygc9kh8JsAAB5",
+      "senderName": "Five",
+      "recipientName": "FJ",
+      "text": "Are you more likely to be there during the week or weekends?",
+      "sentAt": "2026-06-17T15:04:31.371Z"
+    },
+    {
+      "type": "answer",
+      "senderId": "ldGudggj_7VMZLEZAAB9",
+      "senderName": "FJ",
+      "recipientName": null,
+      "text": "Could be. The last time I was there when I was a primary school student",
+      "sentAt": "2026-06-17T15:05:10.491Z"
+    },
+    {
+      "type": "question",
+      "senderId": "ldGudggj_7VMZLEZAAB9",
+      "senderName": "FJ",
+      "recipientName": "Harry",
+      "text": "What do you like the most from the place/location?",
+      "sentAt": "2026-06-17T15:06:18.346Z"
+    },
+    {
+      "type": "answer",
+      "senderId": "o6jC-F4HO4hmbZP9AAB3",
+      "senderName": "Harry",
+      "recipientName": null,
+      "text": "I like how it makes me happy when I'm there",
+      "sentAt": "2026-06-17T15:07:00.438Z"
+    },
+    {
+      "type": "question",
+      "senderId": "o6jC-F4HO4hmbZP9AAB3",
+      "senderName": "Harry",
+      "recipientName": "Marmoush",
+      "text": "If you wrote home about this location to your family, what would you say?",
+      "sentAt": "2026-06-17T15:08:06.772Z"
+    },
+    {
+      "type": "answer",
+      "senderId": "JJV066Q4VkCPgUe1AAB7",
+      "senderName": "Marmoush",
+      "recipientName": null,
+      "text": "Brings back nice memories :D",
+      "sentAt": "2026-06-17T15:08:59.036Z"
+    },
+    {
+      "type": "question",
+      "senderId": "JJV066Q4VkCPgUe1AAB7",
+      "senderName": "Marmoush",
+      "recipientName": "Five",
+      "text": "Is this place typically an indoor or outdoor venue?",
+      "sentAt": "2026-06-17T15:10:23.605Z"
+    },
+    {
+      "type": "answer",
+      "senderId": "wn2Gsn-ygc9kh8JsAAB5",
+      "senderName": "Five",
+      "recipientName": null,
+      "text": "indoor",
+      "sentAt": "2026-06-17T15:11:39.262Z"
+    },
+    {
+      "type": "question",
+      "senderId": "wn2Gsn-ygc9kh8JsAAB5",
+      "senderName": "Five",
+      "recipientName": "FJ",
+      "text": "How long do you typically stay there for?",
+      "sentAt": "2026-06-17T15:13:00.391Z"
+    },
+    {
+      "type": "answer",
+      "senderId": "ldGudggj_7VMZLEZAAB9",
+      "senderName": "FJ",
+      "recipientName": null,
+      "text": "2-3 hours",
+      "sentAt": "2026-06-17T15:13:14.996Z"
+    },
+    {
+      "type": "question",
+      "senderId": "ldGudggj_7VMZLEZAAB9",
+      "senderName": "FJ",
+      "recipientName": "Harry",
+      "text": "Do you still want to go to that place this weekend?",
+      "sentAt": "2026-06-17T15:14:15.015Z"
+    },
+    {
+      "type": "answer",
+      "senderId": "o6jC-F4HO4hmbZP9AAB3",
+      "senderName": "Harry",
+      "recipientName": null,
+      "text": "It could be a laugh",
+      "sentAt": "2026-06-17T15:14:53.716Z"
+    },
+    {
+      "type": "question",
+      "senderId": "o6jC-F4HO4hmbZP9AAB3",
+      "senderName": "Harry",
+      "recipientName": "Marmoush",
+      "text": "would you be surprised if you were permitted to this venue for free?",
+      "sentAt": "2026-06-17T15:15:58.375Z"
+    },
+    {
+      "type": "answer",
+      "senderId": "JJV066Q4VkCPgUe1AAB7",
+      "senderName": "Marmoush",
+      "recipientName": null,
+      "text": "I would say yes",
+      "sentAt": "2026-06-17T15:16:43.032Z"
+    },
+    {
+      "type": "question",
+      "senderId": "JJV066Q4VkCPgUe1AAB7",
+      "senderName": "Marmoush",
+      "recipientName": "FJ",
+      "text": "Are you expected to be seated most of the time?",
+      "sentAt": "2026-06-17T15:17:52.939Z"
+    },
+    {
+      "type": "answer",
+      "senderId": "ldGudggj_7VMZLEZAAB9",
+      "senderName": "FJ",
+      "recipientName": null,
+      "text": "yes",
+      "sentAt": "2026-06-17T15:18:01.987Z"
+    },
+    {
+      "type": "question",
+      "senderId": "ldGudggj_7VMZLEZAAB9",
+      "senderName": "FJ",
+      "recipientName": "Harry",
+      "text": "If its not free how much is the ticket fee ?",
+      "sentAt": "2026-06-17T15:18:32.091Z"
+    },
+    {
+      "type": "system",
+      "senderId": null,
+      "senderName": "System",
+      "recipientName": null,
+      "text": "Marmoush guessed Circus Tent. The spy was correct. Spy wins.",
+      "sentAt": "2026-06-17T15:18:34.147Z"
+    },
+    {
+      "type": "system",
+      "senderId": null,
+      "senderName": "System",
+      "recipientName": null,
+      "text": "Location was Circus Tent.",
+      "sentAt": "2026-06-17T15:18:34.147Z"
+    },
+    {
+      "type": "chat",
+      "senderId": "o6jC-F4HO4hmbZP9AAB3",
+      "senderName": "Harry",
+      "recipientName": null,
+      "text": "hahaha nice",
+      "sentAt": "2026-06-17T15:18:41.403Z"
+    },
+    {
+      "type": "chat",
+      "senderId": "JJV066Q4VkCPgUe1AAB7",
+      "senderName": "Marmoush",
+      "recipientName": null,
+      "text": "Horray :D",
+      "sentAt": "2026-06-17T15:18:41.866Z"
+    },
+    {
+      "type": "chat",
+      "senderId": "o6jC-F4HO4hmbZP9AAB3",
+      "senderName": "Harry",
+      "recipientName": null,
+      "text": "i was honestly suspicious of you",
+      "sentAt": "2026-06-17T15:18:50.459Z"
+    },
+    {
+      "type": "chat",
+      "senderId": "JJV066Q4VkCPgUe1AAB7",
+      "senderName": "Marmoush",
+      "recipientName": null,
+      "text": "I was tempted to select Zoo or Aquarium as well.",
+      "sentAt": "2026-06-17T15:18:57.635Z"
+    },
+    {
+      "type": "chat",
+      "senderId": "ldGudggj_7VMZLEZAAB9",
+      "senderName": "FJ",
+      "recipientName": null,
+      "text": "I wanted to press the button",
+      "sentAt": "2026-06-17T15:19:05.950Z"
+    },
+    {
+      "type": "chat",
+      "senderId": "ldGudggj_7VMZLEZAAB9",
+      "senderName": "FJ",
+      "recipientName": null,
+      "text": "*for Marmoush",
+      "sentAt": "2026-06-17T15:19:09.914Z"
+    },
+    {
+      "type": "chat",
+      "senderId": "JJV066Q4VkCPgUe1AAB7",
+      "senderName": "Marmoush",
+      "recipientName": null,
+      "text": "You should have done so",
+      "sentAt": "2026-06-17T15:19:14.223Z"
+    },
+    {
+      "type": "chat",
+      "senderId": "o6jC-F4HO4hmbZP9AAB3",
+      "senderName": "Harry",
+      "recipientName": null,
+      "text": "but he answered the ticket entry correctly",
+      "sentAt": "2026-06-17T15:19:21.412Z"
+    },
+    {
+      "type": "chat",
+      "senderId": "o6jC-F4HO4hmbZP9AAB3",
+      "senderName": "Harry",
+      "recipientName": null,
+      "text": "yeah wpwp",
+      "sentAt": "2026-06-17T15:19:26.061Z"
+    },
+    {
+      "type": "chat",
+      "senderId": "JJV066Q4VkCPgUe1AAB7",
+      "senderName": "Marmoush",
+      "recipientName": null,
+      "text": "Ah, I am so nervous now!",
+      "sentAt": "2026-06-17T15:19:27.317Z"
+    },
+    {
+      "type": "chat",
+      "senderId": "ldGudggj_7VMZLEZAAB9",
+      "senderName": "FJ",
+      "recipientName": null,
+      "text": "lol",
+      "sentAt": "2026-06-17T15:19:32.104Z"
+    },
+    {
+      "type": "chat",
+      "senderId": "wn2Gsn-ygc9kh8JsAAB5",
+      "senderName": "Five",
+      "recipientName": null,
+      "text": "What do the emojies in the left pane do?",
+      "sentAt": "2026-06-17T15:19:38.061Z"
+    },
+    {
+      "type": "chat",
+      "senderId": "o6jC-F4HO4hmbZP9AAB3",
+      "senderName": "Harry",
+      "recipientName": null,
+      "text": "nothing",
+      "sentAt": "2026-06-17T15:19:43.314Z"
+    },
+    {
+      "type": "chat",
+      "senderId": "o6jC-F4HO4hmbZP9AAB3",
+      "senderName": "Harry",
+      "recipientName": null,
+      "text": "just show up on eachotheres screen",
+      "sentAt": "2026-06-17T15:19:49.716Z"
+    },
+    {
+      "type": "chat",
+      "senderId": "o6jC-F4HO4hmbZP9AAB3",
+      "senderName": "Harry",
+      "recipientName": null,
+      "text": "yeah nice bigfoot",
+      "sentAt": "2026-06-17T15:20:05.292Z"
+    },
+    {
+      "type": "chat",
+      "senderId": "o6jC-F4HO4hmbZP9AAB3",
+      "senderName": "Harry",
+      "recipientName": null,
+      "text": "oky gg",
+      "sentAt": "2026-06-17T15:20:17.811Z"
+    }
+  ],
+  "emotes": [
+    {
+      "playerId": "o6jC-F4HO4hmbZP9AAB3",
+      "emoteId": "thinking",
+      "playedAt": "2026-06-17T15:04:08.080Z"
+    },
+    {
+      "playerId": "ldGudggj_7VMZLEZAAB9",
+      "emoteId": "thinking",
+      "playedAt": "2026-06-17T15:04:14.321Z"
+    },
+    {
+      "playerId": "o6jC-F4HO4hmbZP9AAB3",
+      "emoteId": "magnifying-glass",
+      "playedAt": "2026-06-17T15:04:14.877Z"
+    },
+    {
+      "playerId": "o6jC-F4HO4hmbZP9AAB3",
+      "emoteId": "monster",
+      "playedAt": "2026-06-17T15:04:40.512Z"
+    },
+    {
+      "playerId": "o6jC-F4HO4hmbZP9AAB3",
+      "emoteId": "magnifying-glass",
+      "playedAt": "2026-06-17T15:09:20.079Z"
+    },
+    {
+      "playerId": "o6jC-F4HO4hmbZP9AAB3",
+      "emoteId": "shocked",
+      "playedAt": "2026-06-17T15:13:28.028Z"
+    },
+    {
+      "playerId": "ldGudggj_7VMZLEZAAB9",
+      "emoteId": "monster",
+      "playedAt": "2026-06-17T15:15:40.750Z"
+    },
+    {
+      "playerId": "ldGudggj_7VMZLEZAAB9",
+      "emoteId": "magnifying-glass",
+      "playedAt": "2026-06-17T15:15:54.509Z"
+    },
+    {
+      "playerId": "wn2Gsn-ygc9kh8JsAAB5",
+      "emoteId": "monster",
+      "playedAt": "2026-06-17T15:16:31.273Z"
+    },
+    {
+      "playerId": "o6jC-F4HO4hmbZP9AAB3",
+      "emoteId": "magnifying-glass",
+      "playedAt": "2026-06-17T15:17:05.072Z"
+    },
+    {
+      "playerId": "o6jC-F4HO4hmbZP9AAB3",
+      "emoteId": "smile",
+      "playedAt": "2026-06-17T15:19:05.134Z"
+    },
+    {
+      "playerId": "JJV066Q4VkCPgUe1AAB7",
+      "emoteId": "smile",
+      "playedAt": "2026-06-17T15:19:46.889Z"
+    },
+    {
+      "playerId": "wn2Gsn-ygc9kh8JsAAB5",
+      "emoteId": "monster",
+      "playedAt": "2026-06-17T15:19:52.862Z"
+    },
+    {
+      "playerId": "wn2Gsn-ygc9kh8JsAAB5",
+      "emoteId": "monster",
+      "playedAt": "2026-06-17T15:20:05.275Z"
+    },
+    {
+      "playerId": "o6jC-F4HO4hmbZP9AAB3",
+      "emoteId": "disguise",
+      "playedAt": "2026-06-17T15:20:10.684Z"
+    },
+    {
+      "playerId": "wn2Gsn-ygc9kh8JsAAB5",
+      "emoteId": "disguise",
+      "playedAt": "2026-06-17T15:20:13.402Z"
+    },
+    {
+      "playerId": "ldGudggj_7VMZLEZAAB9",
+      "emoteId": "disguise",
+      "playedAt": "2026-06-17T15:20:15.037Z"
+    }
+  ],
+  "game": {
+    "location": "Circus Tent",
+    "spyId": "JJV066Q4VkCPgUe1AAB7",
+    "phase": "answering",
+    "currentQuestionerId": "ldGudggj_7VMZLEZAAB9",
+    "currentAnswererId": "o6jC-F4HO4hmbZP9AAB3",
+    "previousQuestionerId": "JJV066Q4VkCPgUe1AAB7",
+    "beliefUpdate": null,
+    "beliefUpdates": [
+      {
+        "questionerId": "wn2Gsn-ygc9kh8JsAAB5",
+        "answererId": "ldGudggj_7VMZLEZAAB9",
+        "voterIds": [
+          "o6jC-F4HO4hmbZP9AAB3",
+          "wn2Gsn-ygc9kh8JsAAB5",
+          "JJV066Q4VkCPgUe1AAB7",
+          "ldGudggj_7VMZLEZAAB9"
+        ],
+        "spyLocationOptions": [
+          "Pirate Ship",
+          "Carnival",
+          "Zoo",
+          "Bank",
+          "Cruise Ship",
+          "Hair Dresser"
+        ],
+        "updates": [
+          {
+            "voterId": "o6jC-F4HO4hmbZP9AAB3",
+            "voterName": "Harry",
+            "questionerBelief": "N",
+            "answererBelief": "-",
+            "suspectedLocations": [],
+            "submittedAt": "2026-06-17T15:05:21.204Z"
+          },
+          {
+            "voterId": "ldGudggj_7VMZLEZAAB9",
+            "voterName": "FJ",
+            "questionerBelief": "N",
+            "answererBelief": null,
+            "suspectedLocations": [],
+            "submittedAt": "2026-06-17T15:05:27.942Z"
+          },
+          {
+            "voterId": "wn2Gsn-ygc9kh8JsAAB5",
+            "voterName": "Five",
+            "questionerBelief": null,
+            "answererBelief": "+",
+            "suspectedLocations": [],
+            "submittedAt": "2026-06-17T15:05:46.490Z"
+          },
+          {
+            "voterId": "JJV066Q4VkCPgUe1AAB7",
+            "voterName": "Marmoush",
+            "questionerBelief": null,
+            "answererBelief": null,
+            "suspectedLocations": [
+              "Carnival",
+              "Zoo",
+              "Cruise Ship"
+            ],
+            "submittedAt": "2026-06-17T15:05:47.853Z"
+          }
+        ],
+        "startedAt": "2026-06-17T15:05:10.491Z",
+        "endedAt": "2026-06-17T15:05:47.853Z"
+      },
+      {
+        "questionerId": "ldGudggj_7VMZLEZAAB9",
+        "answererId": "o6jC-F4HO4hmbZP9AAB3",
+        "voterIds": [
+          "o6jC-F4HO4hmbZP9AAB3",
+          "wn2Gsn-ygc9kh8JsAAB5",
+          "JJV066Q4VkCPgUe1AAB7",
+          "ldGudggj_7VMZLEZAAB9"
+        ],
+        "spyLocationOptions": [
+          "Nightclub",
+          "Antarctica",
+          "Hotel",
+          "Hospital",
+          "University",
+          "Embassy"
+        ],
+        "updates": [
+          {
+            "voterId": "o6jC-F4HO4hmbZP9AAB3",
+            "voterName": "Harry",
+            "questionerBelief": "N",
+            "answererBelief": null,
+            "suspectedLocations": [],
+            "submittedAt": "2026-06-17T15:07:05.680Z"
+          },
+          {
+            "voterId": "ldGudggj_7VMZLEZAAB9",
+            "voterName": "FJ",
+            "questionerBelief": null,
+            "answererBelief": "-",
+            "suspectedLocations": [],
+            "submittedAt": "2026-06-17T15:07:08.096Z"
+          },
+          {
+            "voterId": "JJV066Q4VkCPgUe1AAB7",
+            "voterName": "Marmoush",
+            "questionerBelief": null,
+            "answererBelief": null,
+            "suspectedLocations": [
+              "Nightclub",
+              "Hotel"
+            ],
+            "submittedAt": "2026-06-17T15:07:23.064Z"
+          },
+          {
+            "voterId": "wn2Gsn-ygc9kh8JsAAB5",
+            "voterName": "Five",
+            "questionerBelief": "N",
+            "answererBelief": "-",
+            "suspectedLocations": [],
+            "submittedAt": "2026-06-17T15:07:33.160Z"
+          }
+        ],
+        "startedAt": "2026-06-17T15:07:00.438Z",
+        "endedAt": "2026-06-17T15:07:33.160Z"
+      },
+      {
+        "questionerId": "o6jC-F4HO4hmbZP9AAB3",
+        "answererId": "JJV066Q4VkCPgUe1AAB7",
+        "voterIds": [
+          "o6jC-F4HO4hmbZP9AAB3",
+          "wn2Gsn-ygc9kh8JsAAB5",
+          "JJV066Q4VkCPgUe1AAB7",
+          "ldGudggj_7VMZLEZAAB9"
+        ],
+        "spyLocationOptions": [
+          "Submarine",
+          "Pirate Ship",
+          "Airplane",
+          "Zoo",
+          "Cruise Ship",
+          "Passenger Train"
+        ],
+        "updates": [
+          {
+            "voterId": "ldGudggj_7VMZLEZAAB9",
+            "voterName": "FJ",
+            "questionerBelief": "-",
+            "answererBelief": "-",
+            "suspectedLocations": [],
+            "submittedAt": "2026-06-17T15:09:11.080Z"
+          },
+          {
+            "voterId": "o6jC-F4HO4hmbZP9AAB3",
+            "voterName": "Harry",
+            "questionerBelief": null,
+            "answererBelief": "+",
+            "suspectedLocations": [],
+            "submittedAt": "2026-06-17T15:09:13.429Z"
+          },
+          {
+            "voterId": "JJV066Q4VkCPgUe1AAB7",
+            "voterName": "Marmoush",
+            "questionerBelief": null,
+            "answererBelief": null,
+            "suspectedLocations": [
+              "Zoo"
+            ],
+            "submittedAt": "2026-06-17T15:09:14.196Z"
+          },
+          {
+            "voterId": "wn2Gsn-ygc9kh8JsAAB5",
+            "voterName": "Five",
+            "questionerBelief": "N",
+            "answererBelief": "-",
+            "suspectedLocations": [],
+            "submittedAt": "2026-06-17T15:09:16.917Z"
+          }
+        ],
+        "startedAt": "2026-06-17T15:08:59.036Z",
+        "endedAt": "2026-06-17T15:09:16.917Z"
+      },
+      {
+        "questionerId": "JJV066Q4VkCPgUe1AAB7",
+        "answererId": "wn2Gsn-ygc9kh8JsAAB5",
+        "voterIds": [
+          "o6jC-F4HO4hmbZP9AAB3",
+          "wn2Gsn-ygc9kh8JsAAB5",
+          "JJV066Q4VkCPgUe1AAB7",
+          "ldGudggj_7VMZLEZAAB9"
+        ],
+        "spyLocationOptions": [
+          "Nightclub",
+          "Hotel",
+          "Casino",
+          "Aquarium",
+          "University",
+          "Theater"
+        ],
+        "updates": [
+          {
+            "voterId": "wn2Gsn-ygc9kh8JsAAB5",
+            "voterName": "Five",
+            "questionerBelief": "N",
+            "answererBelief": null,
+            "suspectedLocations": [],
+            "submittedAt": "2026-06-17T15:11:43.730Z"
+          },
+          {
+            "voterId": "JJV066Q4VkCPgUe1AAB7",
+            "voterName": "Marmoush",
+            "questionerBelief": null,
+            "answererBelief": null,
+            "suspectedLocations": [
+              "Aquarium"
+            ],
+            "submittedAt": "2026-06-17T15:11:47.537Z"
+          },
+          {
+            "voterId": "o6jC-F4HO4hmbZP9AAB3",
+            "voterName": "Harry",
+            "questionerBelief": "N",
+            "answererBelief": "N",
+            "suspectedLocations": [],
+            "submittedAt": "2026-06-17T15:11:48.528Z"
+          },
+          {
+            "voterId": "ldGudggj_7VMZLEZAAB9",
+            "voterName": "FJ",
+            "questionerBelief": "+",
+            "answererBelief": "N",
+            "suspectedLocations": [],
+            "submittedAt": "2026-06-17T15:12:00.172Z"
+          }
+        ],
+        "startedAt": "2026-06-17T15:11:39.262Z",
+        "endedAt": "2026-06-17T15:12:00.172Z"
+      },
+      {
+        "questionerId": "wn2Gsn-ygc9kh8JsAAB5",
+        "answererId": "ldGudggj_7VMZLEZAAB9",
+        "voterIds": [
+          "o6jC-F4HO4hmbZP9AAB3",
+          "wn2Gsn-ygc9kh8JsAAB5",
+          "JJV066Q4VkCPgUe1AAB7",
+          "ldGudggj_7VMZLEZAAB9"
+        ],
+        "spyLocationOptions": [
+          "Space Station",
+          "Theater",
+          "Pirate Ship",
+          "Zoo",
+          "Bank",
+          "Carnival"
+        ],
+        "updates": [
+          {
+            "voterId": "ldGudggj_7VMZLEZAAB9",
+            "voterName": "FJ",
+            "questionerBelief": "N",
+            "answererBelief": null,
+            "suspectedLocations": [],
+            "submittedAt": "2026-06-17T15:13:21.045Z"
+          },
+          {
+            "voterId": "o6jC-F4HO4hmbZP9AAB3",
+            "voterName": "Harry",
+            "questionerBelief": "N",
+            "answererBelief": "-",
+            "suspectedLocations": [],
+            "submittedAt": "2026-06-17T15:13:22.675Z"
+          },
+          {
+            "voterId": "JJV066Q4VkCPgUe1AAB7",
+            "voterName": "Marmoush",
+            "questionerBelief": null,
+            "answererBelief": null,
+            "suspectedLocations": [
+              "Theater",
+              "Zoo",
+              "Carnival"
+            ],
+            "submittedAt": "2026-06-17T15:13:26.284Z"
+          },
+          {
+            "voterId": "wn2Gsn-ygc9kh8JsAAB5",
+            "voterName": "Five",
+            "questionerBelief": null,
+            "answererBelief": "-",
+            "suspectedLocations": [],
+            "submittedAt": "2026-06-17T15:13:37.862Z"
+          }
+        ],
+        "startedAt": "2026-06-17T15:13:14.996Z",
+        "endedAt": "2026-06-17T15:13:37.862Z"
+      },
+      {
+        "questionerId": "ldGudggj_7VMZLEZAAB9",
+        "answererId": "o6jC-F4HO4hmbZP9AAB3",
+        "voterIds": [
+          "o6jC-F4HO4hmbZP9AAB3",
+          "wn2Gsn-ygc9kh8JsAAB5",
+          "JJV066Q4VkCPgUe1AAB7",
+          "ldGudggj_7VMZLEZAAB9"
+        ],
+        "spyLocationOptions": [
+          "University",
+          "Police Station",
+          "Beach",
+          "Bank",
+          "Supermarket",
+          "Petrol Station"
+        ],
+        "updates": [
+          {
+            "voterId": "o6jC-F4HO4hmbZP9AAB3",
+            "voterName": "Harry",
+            "questionerBelief": "-",
+            "answererBelief": null,
+            "suspectedLocations": [],
+            "submittedAt": "2026-06-17T15:14:57.228Z"
+          },
+          {
+            "voterId": "ldGudggj_7VMZLEZAAB9",
+            "voterName": "FJ",
+            "questionerBelief": null,
+            "answererBelief": "-",
+            "suspectedLocations": [],
+            "submittedAt": "2026-06-17T15:15:02.647Z"
+          },
+          {
+            "voterId": "JJV066Q4VkCPgUe1AAB7",
+            "voterName": "Marmoush",
+            "questionerBelief": null,
+            "answererBelief": null,
+            "suspectedLocations": [
+              "Beach"
+            ],
+            "submittedAt": "2026-06-17T15:15:13.390Z"
+          },
+          {
+            "voterId": "wn2Gsn-ygc9kh8JsAAB5",
+            "voterName": "Five",
+            "questionerBelief": "N",
+            "answererBelief": "-",
+            "suspectedLocations": [],
+            "submittedAt": "2026-06-17T15:15:18.110Z"
+          }
+        ],
+        "startedAt": "2026-06-17T15:14:53.717Z",
+        "endedAt": "2026-06-17T15:15:18.110Z"
+      },
+      {
+        "questionerId": "o6jC-F4HO4hmbZP9AAB3",
+        "answererId": "JJV066Q4VkCPgUe1AAB7",
+        "voterIds": [
+          "o6jC-F4HO4hmbZP9AAB3",
+          "wn2Gsn-ygc9kh8JsAAB5",
+          "JJV066Q4VkCPgUe1AAB7",
+          "ldGudggj_7VMZLEZAAB9"
+        ],
+        "spyLocationOptions": [
+          "Space Station",
+          "Nightclub",
+          "Cruise Ship",
+          "Supermarket",
+          "School",
+          "Passenger Train"
+        ],
+        "updates": [
+          {
+            "voterId": "o6jC-F4HO4hmbZP9AAB3",
+            "voterName": "Harry",
+            "questionerBelief": null,
+            "answererBelief": "-",
+            "suspectedLocations": [],
+            "submittedAt": "2026-06-17T15:16:47.609Z"
+          },
+          {
+            "voterId": "ldGudggj_7VMZLEZAAB9",
+            "voterName": "FJ",
+            "questionerBelief": "-",
+            "answererBelief": "+",
+            "suspectedLocations": [],
+            "submittedAt": "2026-06-17T15:16:53.622Z"
+          },
+          {
+            "voterId": "JJV066Q4VkCPgUe1AAB7",
+            "voterName": "Marmoush",
+            "questionerBelief": null,
+            "answererBelief": null,
+            "suspectedLocations": [
+              "Space Station",
+              "Cruise Ship"
+            ],
+            "submittedAt": "2026-06-17T15:17:07.207Z"
+          },
+          {
+            "voterId": "wn2Gsn-ygc9kh8JsAAB5",
+            "voterName": "Five",
+            "questionerBelief": "N",
+            "answererBelief": "N",
+            "suspectedLocations": [],
+            "submittedAt": "2026-06-17T15:17:14.241Z"
+          }
+        ],
+        "startedAt": "2026-06-17T15:16:43.032Z",
+        "endedAt": "2026-06-17T15:17:14.242Z"
+      },
+      {
+        "questionerId": "JJV066Q4VkCPgUe1AAB7",
+        "answererId": "ldGudggj_7VMZLEZAAB9",
+        "voterIds": [
+          "o6jC-F4HO4hmbZP9AAB3",
+          "wn2Gsn-ygc9kh8JsAAB5",
+          "JJV066Q4VkCPgUe1AAB7",
+          "ldGudggj_7VMZLEZAAB9"
+        ],
+        "spyLocationOptions": [
+          "Supermarket",
+          "Circus Tent",
+          "School",
+          "Submarine",
+          "Battlefield",
+          "Hospital"
+        ],
+        "updates": [
+          {
+            "voterId": "JJV066Q4VkCPgUe1AAB7",
+            "voterName": "Marmoush",
+            "questionerBelief": null,
+            "answererBelief": null,
+            "suspectedLocations": [
+              "Circus Tent"
+            ],
+            "submittedAt": "2026-06-17T15:18:07.385Z"
+          },
+          {
+            "voterId": "ldGudggj_7VMZLEZAAB9",
+            "voterName": "FJ",
+            "questionerBelief": "+",
+            "answererBelief": null,
+            "suspectedLocations": [],
+            "submittedAt": "2026-06-17T15:18:08.647Z"
+          },
+          {
+            "voterId": "o6jC-F4HO4hmbZP9AAB3",
+            "voterName": "Harry",
+            "questionerBelief": "-",
+            "answererBelief": "-",
+            "suspectedLocations": [],
+            "submittedAt": "2026-06-17T15:18:09.058Z"
+          },
+          {
+            "voterId": "wn2Gsn-ygc9kh8JsAAB5",
+            "voterName": "Five",
+            "questionerBelief": "-",
+            "answererBelief": "-",
+            "suspectedLocations": [],
+            "submittedAt": "2026-06-17T15:18:14.929Z"
+          }
+        ],
+        "startedAt": "2026-06-17T15:18:01.987Z",
+        "endedAt": "2026-06-17T15:18:14.929Z"
+      }
+    ],
+    "accuserIds": [],
+    "accusation": null,
+    "accusations": [],
+    "finalAccusation": null,
+    "result": {
+      "winner": "spy",
+      "reason": "spy_guessed_location",
+      "spyName": "Marmoush",
+      "location": "Circus Tent",
+      "guessedLocation": "Circus Tent",
+      "endedAt": "2026-06-17T15:18:34.147Z"
+    },
+    "roundEndsAt": "2026-06-17T15:18:56.062Z",
+    "startedAt": "2026-06-17T15:03:56.062Z"
+  },
+  "roundTimer": null,
+  "closedByPlayerId": "JJV066Q4VkCPgUe1AAB7",
+  "deletedAt": "2026-06-17T15:20:47.500Z",
+  "deleteReason": "last_player_left",
+  "savedAt": "2026-06-17T15:20:47.500Z",
+  "saveReason": "last_player_left"
+}
