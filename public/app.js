@@ -1488,7 +1488,7 @@ function createSpyBeliefForm(room, draft) {
 
   const question = document.createElement("p");
   question.className = "belief-question";
-  question.textContent = "Which of these locations became more likely (select 0 or many)?";
+  question.textContent = "Which of these locations became more likely (select 0 or more)?";
   form.appendChild(question);
 
   const options = document.createElement("div");

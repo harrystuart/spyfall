@@ -453,12 +453,12 @@ select:disabled {
   }
 
   84% {
-    transform: translateX(calc(-8px * var(--ui-scale)));
+    transform: translateX(calc(-16px * var(--ui-scale)));
   }
 }
 
 .game-state-card.is-your-action {
-  animation: action-nudge-left 2s ease-in-out infinite;
+  animation: action-nudge-left 1.2s ease-in-out infinite;
 }
 
 .game-state-card::before {
