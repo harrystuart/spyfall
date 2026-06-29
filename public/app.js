@@ -1273,7 +1273,7 @@ function renderChatControls(room) {
   }
 
   if (canAsk && hasEligibleAnswerer && hasChosenAnswerer) {
-    chatMessageInput.placeholder = "Ask a question";
+    chatMessageInput.placeholder = "e.g. what is your favourite memory here?";
     return;
   }
 
